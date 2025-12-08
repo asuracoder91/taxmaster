@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
 
 import 'app.dart';
+import 'injection.dart';
 
 void main() async {
   // Flutter 바인딩 초기화
@@ -34,6 +35,9 @@ void main() async {
   // Hive 박스 열기
   // await Hive.openBox<CalculationHistory>('calculation_history');
   // await Hive.openBox('settings');
+
+  // 의존성 주입 설정
+  await configureDependencies();
 
   // 앱 실행
   runApp(const TaxMasterApp());

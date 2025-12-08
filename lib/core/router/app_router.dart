@@ -272,3 +272,6 @@ class _TaxTypeCard extends StatelessWidget {
     );
   }
 }
+
+/// Top-level router instance for MaterialApp.router
+final appRouter = AppRouter.router;
