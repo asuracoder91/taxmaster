@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'core/router/app_router.dart';
 import 'core/theme/app_theme.dart';
@@ -21,11 +22,16 @@ class TaxMasterApp extends StatelessWidget {
       // 라우터 설정
       routerConfig: appRouter,
 
-      // 한국어 로케일 설정
+      // 로케일 설정
       locale: const Locale('ko', 'KR'),
       supportedLocales: const [
         Locale('ko', 'KR'),
         Locale('en', 'US'),
+      ],
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
       ],
     );
   }

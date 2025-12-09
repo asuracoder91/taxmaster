@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Background -->
+  <rect width="512" height="512" rx="90" fill="#1565C0"/>
+
+  <!-- Calculator body -->
+  <rect x="120" y="80" width="272" height="352" rx="20" fill="#FFFFFF"/>
+
+  <!-- Display screen -->
+  <rect x="145" y="105" width="222" height="80" rx="10" fill="#E3F2FD"/>
+
+  <!-- Won symbol in display -->
+  <text x="256" y="165" font-family="Arial, sans-serif" font-size="48" font-weight="bold" fill="#1565C0" text-anchor="middle">&#8361;</text>
+
+  <!-- Calculator buttons - Row 1 -->
+  <rect x="145" y="205" width="48" height="40" rx="6" fill="#1565C0"/>
+  <rect x="203" y="205" width="48" height="40" rx="6" fill="#1565C0"/>
+  <rect x="261" y="205" width="48" height="40" rx="6" fill="#1565C0"/>
+  <rect x="319" y="205" width="48" height="40" rx="6" fill="#FF8F00"/>
+
+  <!-- Calculator buttons - Row 2 -->
+  <rect x="145" y="255" width="48" height="40" rx="6" fill="#42A5F5"/>
+  <rect x="203" y="255" width="48" height="40" rx="6" fill="#42A5F5"/>
+  <rect x="261" y="255" width="48" height="40" rx="6" fill="#42A5F5"/>
+  <rect x="319" y="255" width="48" height="40" rx="6" fill="#FF8F00"/>
+
+  <!-- Calculator buttons - Row 3 -->
+  <rect x="145" y="305" width="48" height="40" rx="6" fill="#42A5F5"/>
+  <rect x="203" y="305" width="48" height="40" rx="6" fill="#42A5F5"/>
+  <rect x="261" y="305" width="48" height="40" rx="6" fill="#42A5F5"/>
+  <rect x="319" y="305" width="48" height="40" rx="6" fill="#FF8F00"/>
+
+  <!-- Calculator buttons - Row 4 -->
+  <rect x="145" y="355" width="48" height="40" rx="6" fill="#42A5F5"/>
+  <rect x="203" y="355" width="48" height="40" rx="6" fill="#42A5F5"/>
+  <rect x="261" y="355" width="48" height="40" rx="6" fill="#42A5F5"/>
+  <rect x="319" y="355" width="48" height="40" rx="6" fill="#4CAF50"/>
+
+  <!-- Tax badge -->
+  <circle cx="400" cy="112" r="56" fill="#C62828"/>
+  <text x="400" y="125" font-family="Arial, sans-serif" font-size="32" font-weight="bold" fill="#FFFFFF" text-anchor="middle">TAX</text>
+</svg>

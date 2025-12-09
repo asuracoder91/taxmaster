@@ -475,28 +475,16 @@ class _HistoryScreenState extends State<HistoryScreen> {
   }
 
   void _navigateToCalculator(TaxType type) {
-    String route;
-    switch (type) {
-      case TaxType.income:
-        route = '/income-tax';
-        break;
-      case TaxType.corporate:
-        route = '/corporate-tax';
-        break;
-      case TaxType.capitalGains:
-        route = '/capital-gains-tax';
-        break;
-      case TaxType.inheritance:
-        route = '/inheritance-tax';
-        break;
-      case TaxType.gift:
-        route = '/gift-tax';
-        break;
-      case TaxType.retirement:
-        route = '/retirement-income';
-        break;
-    }
-    // GoRouter를 사용하여 이동
+    // GoRouter를 사용하여 이동 (향후 구현)
+    // ignore: unused_local_variable
+    final route = switch (type) {
+      TaxType.income => '/income-tax',
+      TaxType.corporate => '/corporate-tax',
+      TaxType.capitalGains => '/capital-gains-tax',
+      TaxType.inheritance => '/inheritance-tax',
+      TaxType.gift => '/gift-tax',
+      TaxType.retirement => '/retirement-income',
+    };
     // context.go(route);
   }
 

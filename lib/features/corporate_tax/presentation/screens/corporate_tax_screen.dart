@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/constants/tax_rates.dart';
-import '../../../../core/utils/number_formatter.dart';
 import '../../../../core/utils/tax_calculator_utils.dart';
 import '../../../../shared/widgets/tax_input_field.dart';
 import '../../../../shared/widgets/tax_result_card.dart';
@@ -29,8 +27,8 @@ class _CorporateTaxScreenState extends State<CorporateTaxScreen> {
   void _calculate() {
     if (!_formKey.currentState!.validate()) return;
 
-    final taxableIncome =
-        NumberFormatter.parseNumber(_taxableIncomeController.text) ?? 0;
+    // 만원 단위 입력을 원 단위로 변환
+    final taxableIncome = TaxInputField.getValueInWon(_taxableIncomeController);
 
     final result = TaxCalculatorUtils.calculateCorporateTax(
       taxableIncome: taxableIncome,

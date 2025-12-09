@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/constants/deduction_rates.dart';
-import '../../../../core/constants/tax_rates.dart';
 import '../../../../core/utils/number_formatter.dart';
 import '../../../../core/utils/tax_calculator_utils.dart';
 import '../../../../shared/widgets/tax_input_field.dart';
@@ -39,10 +38,9 @@ class _GiftTaxScreenState extends State<GiftTaxScreen> {
   void _calculate() {
     if (!_formKey.currentState!.validate()) return;
 
-    final giftValue =
-        NumberFormatter.parseNumber(_giftValueController.text) ?? 0;
-    final previousGifts =
-        NumberFormatter.parseNumber(_previousGiftsController.text) ?? 0;
+    // 만원 단위 입력을 원 단위로 변환
+    final giftValue = TaxInputField.getValueInWon(_giftValueController);
+    final previousGifts = TaxInputField.getValueInWon(_previousGiftsController);
 
     final result = TaxCalculatorUtils.calculateGiftTax(
       giftValue: giftValue,

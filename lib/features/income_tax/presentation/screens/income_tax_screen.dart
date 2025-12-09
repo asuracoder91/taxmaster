@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
-import '../../../../core/utils/number_formatter.dart';
 import '../../../../core/utils/tax_calculator_utils.dart';
 import '../../../../shared/widgets/tax_input_field.dart';
 import '../../../../shared/widgets/tax_result_card.dart';
@@ -50,18 +48,13 @@ class _IncomeTaxScreenState extends State<IncomeTaxScreen> {
   void _calculate() {
     if (!_formKey.currentState!.validate()) return;
 
-    final earnedIncome =
-        NumberFormatter.parseNumber(_earnedIncomeController.text) ?? 0;
-    final businessIncome =
-        NumberFormatter.parseNumber(_businessIncomeController.text) ?? 0;
-    final interestIncome =
-        NumberFormatter.parseNumber(_interestIncomeController.text) ?? 0;
-    final dividendIncome =
-        NumberFormatter.parseNumber(_dividendIncomeController.text) ?? 0;
-    final pensionIncome =
-        NumberFormatter.parseNumber(_pensionIncomeController.text) ?? 0;
-    final otherIncome =
-        NumberFormatter.parseNumber(_otherIncomeController.text) ?? 0;
+    // 만원 단위 입력을 원 단위로 변환
+    final earnedIncome = TaxInputField.getValueInWon(_earnedIncomeController);
+    final businessIncome = TaxInputField.getValueInWon(_businessIncomeController);
+    final interestIncome = TaxInputField.getValueInWon(_interestIncomeController);
+    final dividendIncome = TaxInputField.getValueInWon(_dividendIncomeController);
+    final pensionIncome = TaxInputField.getValueInWon(_pensionIncomeController);
+    final otherIncome = TaxInputField.getValueInWon(_otherIncomeController);
 
     final result = TaxCalculatorUtils.calculateIncomeTax(
       earnedIncome: earnedIncome,
@@ -193,6 +186,21 @@ class _IncomeTaxScreenState extends State<IncomeTaxScreen> {
                 const SizedBox(height: 24),
                 TaxResultCard(result: _result!),
               ],
+
+              const SizedBox(height: 24),
+
+              // 세율표
+              _buildRateTable(),
+
+              const SizedBox(height: 16),
+
+              // 근로소득공제표
+              _buildEarnedIncomeDeductionTable(),
+
+              const SizedBox(height: 16),
+
+              // 인적공제 참조표
+              _buildPersonalDeductionTable(),
             ],
           ),
         ),
@@ -341,6 +349,272 @@ class _IncomeTaxScreenState extends State<IncomeTaxScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildRateTable() {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '종합소득세 세율표 (2025년)',
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+            ),
+            const SizedBox(height: 12),
+            Table(
+              border: TableBorder.all(
+                color: Colors.grey[300]!,
+                width: 1,
+              ),
+              columnWidths: const {
+                0: FlexColumnWidth(2),
+                1: FlexColumnWidth(1),
+                2: FlexColumnWidth(1.5),
+              },
+              children: [
+                TableRow(
+                  decoration: BoxDecoration(
+                    color: Colors.grey[100],
+                  ),
+                  children: const [
+                    Padding(
+                      padding: EdgeInsets.all(8),
+                      child: Text(
+                        '과세표준',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.all(8),
+                      child: Text(
+                        '세율',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.all(8),
+                      child: Text(
+                        '누진공제',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ],
+                ),
+                _buildRateRow('1,400만원 이하', '6%', '-'),
+                _buildRateRow('1,400~5,000만원', '15%', '126만원'),
+                _buildRateRow('5,000~8,800만원', '24%', '576만원'),
+                _buildRateRow('8,800만원~1.5억원', '35%', '1,544만원'),
+                _buildRateRow('1.5억~3억원', '38%', '1,994만원'),
+                _buildRateRow('3억~5억원', '40%', '2,594만원'),
+                _buildRateRow('5억~10억원', '42%', '3,594만원'),
+                _buildRateRow('10억원 초과', '45%', '6,594만원'),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  TableRow _buildRateRow(String bracket, String rate, String deduction) {
+    return TableRow(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(8),
+          child: Text(bracket, style: const TextStyle(fontSize: 12)),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8),
+          child: Text(
+            rate,
+            textAlign: TextAlign.center,
+            style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 12),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8),
+          child: Text(
+            deduction,
+            textAlign: TextAlign.center,
+            style: const TextStyle(fontSize: 12),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildEarnedIncomeDeductionTable() {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '근로소득공제',
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+            ),
+            const SizedBox(height: 12),
+            Table(
+              border: TableBorder.all(
+                color: Colors.grey[300]!,
+                width: 1,
+              ),
+              columnWidths: const {
+                0: FlexColumnWidth(1.5),
+                1: FlexColumnWidth(2),
+              },
+              children: [
+                TableRow(
+                  decoration: BoxDecoration(
+                    color: Colors.grey[100],
+                  ),
+                  children: const [
+                    Padding(
+                      padding: EdgeInsets.all(8),
+                      child: Text(
+                        '총급여액',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.all(8),
+                      child: Text(
+                        '공제액',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ],
+                ),
+                _buildDeductionRow('500만원 이하', '70%'),
+                _buildDeductionRow('500만~1,500만원', '350만원 + (초과분×40%)'),
+                _buildDeductionRow('1,500만~4,500만원', '750만원 + (초과분×15%)'),
+                _buildDeductionRow('4,500만~1억원', '1,200만원 + (초과분×5%)'),
+                _buildDeductionRow('1억원 초과', '1,475만원 + (초과분×2%)'),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  TableRow _buildDeductionRow(String income, String deduction) {
+    return TableRow(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(8),
+          child: Text(income, style: const TextStyle(fontSize: 12)),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8),
+          child: Text(
+            deduction,
+            style: const TextStyle(fontSize: 12),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPersonalDeductionTable() {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '인적공제 금액',
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+            ),
+            const SizedBox(height: 12),
+            Table(
+              border: TableBorder.all(
+                color: Colors.grey[300]!,
+                width: 1,
+              ),
+              columnWidths: const {
+                0: FlexColumnWidth(2),
+                1: FlexColumnWidth(1),
+              },
+              children: [
+                TableRow(
+                  decoration: BoxDecoration(
+                    color: Colors.grey[100],
+                  ),
+                  children: const [
+                    Padding(
+                      padding: EdgeInsets.all(8),
+                      child: Text(
+                        '구분',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.all(8),
+                      child: Text(
+                        '금액',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ],
+                ),
+                _buildPersonalRow('기본공제 (본인)', '150만원'),
+                _buildPersonalRow('배우자 공제', '150만원'),
+                _buildPersonalRow('부양가족 (1인당)', '150만원'),
+                _buildPersonalRow('경로우대 (70세 이상)', '100만원'),
+                _buildPersonalRow('장애인', '200만원'),
+                _buildPersonalRow('부녀자', '50만원'),
+                _buildPersonalRow('한부모', '100만원'),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              '* 부녀자 공제와 한부모 공제는 중복 적용 불가',
+              style: TextStyle(
+                fontSize: 11,
+                color: Colors.grey[600],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  TableRow _buildPersonalRow(String category, String amount) {
+    return TableRow(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(8),
+          child: Text(category, style: const TextStyle(fontSize: 12)),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8),
+          child: Text(
+            amount,
+            textAlign: TextAlign.center,
+            style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 12),
+          ),
+        ),
+      ],
     );
   }
 }

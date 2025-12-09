@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/constants/deduction_rates.dart';
-import '../../../../core/constants/tax_rates.dart';
 import '../../../../core/utils/number_formatter.dart';
 import '../../../../core/utils/tax_calculator_utils.dart';
 import '../../../../shared/widgets/tax_input_field.dart';
@@ -53,17 +52,13 @@ class _InheritanceTaxScreenState extends State<InheritanceTaxScreen> {
   void _calculate() {
     if (!_formKey.currentState!.validate()) return;
 
-    final totalAssets =
-        NumberFormatter.parseNumber(_totalAssetsController.text) ?? 0;
-    final debts = NumberFormatter.parseNumber(_debtsController.text) ?? 0;
-    final funeralExpenses =
-        NumberFormatter.parseNumber(_funeralExpensesController.text) ?? 0;
-    final financialAssets =
-        NumberFormatter.parseNumber(_financialAssetsController.text) ?? 0;
-    final housingValue =
-        NumberFormatter.parseNumber(_housingValueController.text) ?? 0;
-    final reinheritanceValue =
-        NumberFormatter.parseNumber(_reinheritanceValueController.text) ?? 0;
+    // 만원 단위 입력을 원 단위로 변환
+    final totalAssets = TaxInputField.getValueInWon(_totalAssetsController);
+    final debts = TaxInputField.getValueInWon(_debtsController);
+    final funeralExpenses = TaxInputField.getValueInWon(_funeralExpensesController);
+    final financialAssets = TaxInputField.getValueInWon(_financialAssetsController);
+    final housingValue = TaxInputField.getValueInWon(_housingValueController);
+    final reinheritanceValue = TaxInputField.getValueInWon(_reinheritanceValueController);
 
     final result = TaxCalculatorUtils.calculateInheritanceTax(
       totalAssets: totalAssets,

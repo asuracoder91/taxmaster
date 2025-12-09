@@ -40,12 +40,10 @@ class _CapitalGainsTaxScreenState extends State<CapitalGainsTaxScreen> {
   void _calculate() {
     if (!_formKey.currentState!.validate()) return;
 
-    final acquisitionPrice =
-        NumberFormatter.parseNumber(_acquisitionPriceController.text) ?? 0;
-    final transferPrice =
-        NumberFormatter.parseNumber(_transferPriceController.text) ?? 0;
-    final expenses =
-        NumberFormatter.parseNumber(_expensesController.text) ?? 0;
+    // 만원 단위 입력을 원 단위로 변환
+    final acquisitionPrice = TaxInputField.getValueInWon(_acquisitionPriceController);
+    final transferPrice = TaxInputField.getValueInWon(_transferPriceController);
+    final expenses = TaxInputField.getValueInWon(_expensesController);
     final holdingYears = int.tryParse(_holdingYearsController.text) ?? 0;
     final residenceYears = int.tryParse(_residenceYearsController.text) ?? 0;
 
@@ -193,6 +191,11 @@ class _CapitalGainsTaxScreenState extends State<CapitalGainsTaxScreen> {
               ],
 
               const SizedBox(height: 24),
+
+              // 양도소득세 세율표
+              _buildRateTable(),
+
+              const SizedBox(height: 16),
 
               // 장기보유특별공제율 표
               _buildLongTermDeductionTable(),
@@ -367,6 +370,149 @@ class _CapitalGainsTaxScreenState extends State<CapitalGainsTaxScreen> {
                   ),
                 ),
               ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRateTable() {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '양도소득세 세율표 (2025년)',
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+            ),
+            const SizedBox(height: 12),
+            Table(
+              border: TableBorder.all(
+                color: Colors.grey[300]!,
+                width: 1,
+              ),
+              columnWidths: const {
+                0: FlexColumnWidth(2),
+                1: FlexColumnWidth(1),
+                2: FlexColumnWidth(1.5),
+              },
+              children: [
+                TableRow(
+                  decoration: BoxDecoration(
+                    color: Colors.grey[100],
+                  ),
+                  children: const [
+                    Padding(
+                      padding: EdgeInsets.all(8),
+                      child: Text(
+                        '과세표준',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.all(8),
+                      child: Text(
+                        '세율',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.all(8),
+                      child: Text(
+                        '누진공제',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ],
+                ),
+                _buildTaxRateRow('1,400만원 이하', '6%', '-'),
+                _buildTaxRateRow('1,400~5,000만원', '15%', '126만원'),
+                _buildTaxRateRow('5,000~8,800만원', '24%', '576만원'),
+                _buildTaxRateRow('8,800만원~1.5억원', '35%', '1,544만원'),
+                _buildTaxRateRow('1.5억~3억원', '38%', '1,994만원'),
+                _buildTaxRateRow('3억~5억원', '40%', '2,594만원'),
+                _buildTaxRateRow('5억~10억원', '42%', '3,594만원'),
+                _buildTaxRateRow('10억원 초과', '45%', '6,594만원'),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Text(
+              '특별세율',
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+            ),
+            const SizedBox(height: 8),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.orange[50],
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildSpecialRateItem('1년 미만 보유 (주택)', '70%'),
+                  _buildSpecialRateItem('1~2년 보유 (주택)', '60%'),
+                  _buildSpecialRateItem('비사업용 토지', '60%'),
+                  _buildSpecialRateItem('미등기 양도', '70%'),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  TableRow _buildTaxRateRow(String bracket, String rate, String deduction) {
+    return TableRow(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(8),
+          child: Text(bracket, style: const TextStyle(fontSize: 12)),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8),
+          child: Text(
+            rate,
+            textAlign: TextAlign.center,
+            style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 12),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8),
+          child: Text(
+            deduction,
+            textAlign: TextAlign.center,
+            style: const TextStyle(fontSize: 12),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSpecialRateItem(String label, String rate) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 2),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(label, style: const TextStyle(fontSize: 12)),
+          Text(
+            rate,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+              color: Colors.orange[800],
             ),
           ),
         ],

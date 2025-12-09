@@ -34,8 +34,8 @@ class _RetirementIncomeScreenState extends State<RetirementIncomeScreen> {
   void _calculate() {
     if (!_formKey.currentState!.validate()) return;
 
-    final retirementPay =
-        NumberFormatter.parseNumber(_retirementPayController.text) ?? 0;
+    // 만원 단위 입력을 원 단위로 변환
+    final retirementPay = TaxInputField.getValueInWon(_retirementPayController);
     final years = int.tryParse(_serviceYearsController.text) ?? 0;
     final months = int.tryParse(_serviceMonthsController.text) ?? 0;
 

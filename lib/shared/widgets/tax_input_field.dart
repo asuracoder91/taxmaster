@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 
 import '../../core/utils/number_formatter.dart';
 
-/// 세금 입력 필드 위젯
+/// 세금 입력 필드 위젯 (만원 단위)
 class TaxInputField extends StatelessWidget {
   final TextEditingController controller;
   final String label;
@@ -20,7 +20,7 @@ class TaxInputField extends StatelessWidget {
     required this.label,
     this.hint,
     this.prefixIcon,
-    this.suffix = '원',
+    this.suffix = '만원',
     this.required = false,
     this.validator,
     this.onChanged,
@@ -32,7 +32,7 @@ class TaxInputField extends StatelessWidget {
       controller: controller,
       decoration: InputDecoration(
         labelText: label,
-        hintText: hint,
+        hintText: hint ?? '만원 단위로 입력',
         prefixIcon: prefixIcon != null ? Icon(prefixIcon) : null,
         suffixText: suffix,
         border: const OutlineInputBorder(),
@@ -40,7 +40,7 @@ class TaxInputField extends StatelessWidget {
       keyboardType: TextInputType.number,
       inputFormatters: [
         FilteringTextInputFormatter.digitsOnly,
-        _CurrencyInputFormatter(),
+        _TenThousandInputFormatter(),
       ],
       validator: validator ??
           (value) {
@@ -52,10 +52,26 @@ class TaxInputField extends StatelessWidget {
       onChanged: onChanged,
     );
   }
+
+  /// 입력된 만원 단위 값을 원 단위로 변환하여 반환
+  static double getValueInWon(TextEditingController controller) {
+    final tenThousandValue = NumberFormatter.parseNumber(controller.text) ?? 0;
+    return tenThousandValue * 10000;
+  }
+
+  /// 원 단위 값을 만원 단위로 변환하여 컨트롤러에 설정
+  static void setValueFromWon(TextEditingController controller, double wonValue) {
+    final tenThousandValue = (wonValue / 10000).round();
+    if (tenThousandValue > 0) {
+      controller.text = NumberFormatter.formatCurrency(tenThousandValue.toDouble());
+    } else {
+      controller.clear();
+    }
+  }
 }
 
-/// 통화 입력 포매터
-class _CurrencyInputFormatter extends TextInputFormatter {
+/// 만원 단위 입력 포매터
+class _TenThousandInputFormatter extends TextInputFormatter {
   @override
   TextEditingValue formatEditUpdate(
     TextEditingValue oldValue,
@@ -71,7 +87,7 @@ class _CurrencyInputFormatter extends TextInputFormatter {
       return const TextEditingValue(text: '');
     }
 
-    // 포맷팅
+    // 포맷팅 (콤마 추가)
     final number = int.parse(numericString);
     final formatted = NumberFormatter.formatCurrency(number.toDouble());
 

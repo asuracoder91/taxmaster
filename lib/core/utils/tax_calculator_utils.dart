@@ -50,8 +50,8 @@ class TaxCalculatorUtils {
     );
 
     // 5. 과세표준
-    final taxableIncome = (comprehensiveIncome - personalDeductions)
-        .clamp(0, double.infinity);
+    final double taxableIncome = (comprehensiveIncome - personalDeductions)
+        .clamp(0.0, double.infinity);
 
     // 6. 산출세액
     final calculatedTax = IncomeTaxRates.calculate(taxableIncome);
@@ -141,8 +141,8 @@ class TaxCalculatorUtils {
 
     // 4. 기본공제 (연 250만원)
     const basicDeduction = 2500000.0;
-    final taxableIncome =
-        (capitalGainAmount - basicDeduction).clamp(0, double.infinity);
+    final double taxableIncome =
+        (capitalGainAmount - basicDeduction).clamp(0.0, double.infinity);
 
     // 5. 산출세액
     final calculatedTax = CapitalGainsTaxRates.calculate(taxableIncome);
@@ -245,8 +245,8 @@ class TaxCalculatorUtils {
     }
 
     // 3. 과세표준
-    final taxableIncome =
-        (inheritanceValue - totalDeductions).clamp(0, double.infinity);
+    final double taxableIncome =
+        (inheritanceValue - totalDeductions).clamp(0.0, double.infinity);
 
     // 4. 산출세액
     final calculatedTax = InheritanceGiftTaxRates.calculate(taxableIncome);
@@ -286,8 +286,8 @@ class TaxCalculatorUtils {
     final giftDeduction = GiftTaxDeduction.getDeductionLimit(relation);
 
     // 3. 과세표준
-    final taxableIncome =
-        (totalGiftValue - giftDeduction).clamp(0, double.infinity);
+    final double taxableIncome =
+        (totalGiftValue - giftDeduction).clamp(0.0, double.infinity);
 
     // 4. 산출세액
     final calculatedTax = InheritanceGiftTaxRates.calculate(taxableIncome);
@@ -298,11 +298,11 @@ class TaxCalculatorUtils {
     if (previousGiftsIn10Years > giftDeduction) {
       previousTaxPaid = InheritanceGiftTaxRates.calculate(previousGiftsIn10Years - giftDeduction);
     }
-    final finalTax = (calculatedTax - previousTaxPaid).clamp(0, double.infinity);
+    final double finalTax = (calculatedTax - previousTaxPaid).clamp(0.0, double.infinity);
 
     return TaxCalculationResult(
       totalIncome: giftValue,
-      deductions: giftDeduction,
+      deductions: giftDeduction.toDouble(),
       taxableIncome: taxableIncome,
       calculatedTax: finalTax,
       effectiveRate: giftValue > 0 ? finalTax / giftValue : 0,
@@ -348,23 +348,23 @@ class TaxCalculatorUtils {
     final serviceDeduction = RetirementServiceDeduction.calculate(years);
 
     // 2. 환산급여
-    final taxableRetirement =
-        (retirementPay - serviceDeduction).clamp(0, double.infinity);
-    final convertedIncome = years > 0 ? (taxableRetirement / years) * 12 : 0.0;
+    final double taxableRetirement =
+        (retirementPay - serviceDeduction).clamp(0.0, double.infinity);
+    final double convertedIncome = years > 0 ? (taxableRetirement / years) * 12 : 0.0;
 
     // 3. 환산급여 공제
     final convertedDeduction =
         RetirementIncomeTaxRates.calculateConvertedDeduction(convertedIncome);
 
     // 4. 환산 과세표준
-    final taxableConverted =
-        (convertedIncome - convertedDeduction).clamp(0, double.infinity);
+    final double taxableConverted =
+        (convertedIncome - convertedDeduction).clamp(0.0, double.infinity);
 
     // 5. 환산 산출세액
     final convertedTax = IncomeTaxRates.calculate(taxableConverted);
 
     // 6. 실제 산출세액
-    final calculatedTax = years > 0 ? convertedTax * years / 12 : 0.0;
+    final double calculatedTax = years > 0 ? convertedTax * years / 12 : 0.0;
 
     return TaxCalculationResult(
       totalIncome: retirementPay,
