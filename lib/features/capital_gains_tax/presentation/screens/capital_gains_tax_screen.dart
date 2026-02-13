@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/constants/deduction_rates.dart';
+import '../../../../core/utils/deduction_details_builder.dart';
 import '../../../../core/utils/number_formatter.dart';
 import '../../../../core/utils/tax_calculator_utils.dart';
+import '../../../../shared/models/deduction_item.dart';
+import '../../../../shared/widgets/deduction_details_card.dart';
 import '../../../../shared/widgets/tax_input_field.dart';
 import '../../../../shared/widgets/tax_result_card.dart';
 
@@ -26,6 +29,7 @@ class _CapitalGainsTaxScreenState extends State<CapitalGainsTaxScreen> {
   bool _isOneHouseOneFamily = false;
 
   TaxCalculationResult? _result;
+  DeductionDetails? _deductionDetails;
 
   @override
   void dispose() {
@@ -56,8 +60,20 @@ class _CapitalGainsTaxScreenState extends State<CapitalGainsTaxScreen> {
       residenceYears: residenceYears,
     );
 
+    // 공제 상세 정보 생성
+    final deductionDetails = DeductionDetailsBuilder.buildCapitalGainsTaxDeductions(
+      capitalGain: result.details['capitalGain'] as double? ?? 0,
+      holdingYears: holdingYears,
+      longTermDeductionRate: result.details['longTermDeductionRate'] as double? ?? 0,
+      longTermDeduction: result.details['longTermDeduction'] as double? ?? 0,
+      basicDeduction: result.details['basicDeduction'] as double? ?? 0,
+      isOneHouseOneFamily: _isOneHouseOneFamily,
+      residenceYears: residenceYears,
+    );
+
     setState(() {
       _result = result;
+      _deductionDetails = deductionDetails;
     });
   }
 
@@ -71,6 +87,7 @@ class _CapitalGainsTaxScreenState extends State<CapitalGainsTaxScreen> {
     setState(() {
       _isOneHouseOneFamily = false;
       _result = null;
+      _deductionDetails = null;
     });
   }
 
@@ -188,6 +205,15 @@ class _CapitalGainsTaxScreenState extends State<CapitalGainsTaxScreen> {
               if (_result != null) ...[
                 const SizedBox(height: 24),
                 _buildResultCard(),
+                // 공제 상세내역 카드
+                if (_deductionDetails != null) ...[
+                  const SizedBox(height: 16),
+                  DeductionDetailsCard(
+                    details: _deductionDetails!,
+                    title: '공제 상세내역',
+                    accentColor: const Color(0xFF00796B),
+                  ),
+                ],
               ],
 
               const SizedBox(height: 24),

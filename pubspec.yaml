@@ -2,7 +2,7 @@ name: tax_master
 description: "종합 세금 계산기 - 소득세, 법인세, 상속세, 증여세, 양도소득세, 퇴직소득세"
 publish_to: 'none'
 
-version: 1.0.0+1
+version: 1.0.1+2
 
 environment:
   sdk: ^3.8.0

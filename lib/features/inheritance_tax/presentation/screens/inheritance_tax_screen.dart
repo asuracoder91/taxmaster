@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/constants/deduction_rates.dart';
+import '../../../../core/utils/deduction_details_builder.dart';
 import '../../../../core/utils/number_formatter.dart';
 import '../../../../core/utils/tax_calculator_utils.dart';
+import '../../../../shared/models/deduction_item.dart';
+import '../../../../shared/widgets/deduction_details_card.dart';
 import '../../../../shared/widgets/tax_input_field.dart';
 import '../../../../shared/widgets/tax_result_card.dart';
 
@@ -37,6 +40,7 @@ class _InheritanceTaxScreenState extends State<InheritanceTaxScreen> {
   int _reinheritanceYears = 0;
 
   TaxCalculationResult? _result;
+  DeductionDetails? _deductionDetails;
 
   @override
   void dispose() {
@@ -74,8 +78,27 @@ class _InheritanceTaxScreenState extends State<InheritanceTaxScreen> {
       reinheritanceYears: _hasReinheritance ? _reinheritanceYears : 0,
     );
 
+    // 공제 상세 정보 생성
+    final details = result.details;
+    final deductionDetails = DeductionDetailsBuilder.buildInheritanceTaxDeductions(
+      basicDeduction: details['basicDeduction'] as double? ?? 0,
+      spouseDeduction: details['spouseDeduction'] as double? ?? 0,
+      childDeduction: details['childDeduction'] as double? ?? 0,
+      financialDeduction: details['financialDeduction'] as double? ?? 0,
+      housingDeduction: details['housingDeduction'] as double? ?? 0,
+      reinheritanceDeduction: details['reinheritanceDeduction'] as double? ?? 0,
+      hasSpouse: _hasSpouse,
+      childrenCount: _childrenCount,
+      parentsCount: _parentsCount,
+      siblingsCount: _siblingsCount,
+      financialAssets: _isFinancialAssetDeduction ? financialAssets : 0,
+      housingValue: _hasHousingDeduction ? housingValue : 0,
+      reinheritanceYears: _hasReinheritance ? _reinheritanceYears : 0,
+    );
+
     setState(() {
       _result = result;
+      _deductionDetails = deductionDetails;
     });
   }
 
@@ -97,6 +120,7 @@ class _InheritanceTaxScreenState extends State<InheritanceTaxScreen> {
       _hasReinheritance = false;
       _reinheritanceYears = 0;
       _result = null;
+      _deductionDetails = null;
     });
   }
 
@@ -185,6 +209,15 @@ class _InheritanceTaxScreenState extends State<InheritanceTaxScreen> {
               if (_result != null) ...[
                 const SizedBox(height: 24),
                 _buildResultCard(),
+                // 공제 상세내역 카드
+                if (_deductionDetails != null) ...[
+                  const SizedBox(height: 16),
+                  DeductionDetailsCard(
+                    details: _deductionDetails!,
+                    title: '상속공제 상세내역',
+                    accentColor: const Color(0xFF5D4037),
+                  ),
+                ],
               ],
 
               const SizedBox(height: 24),

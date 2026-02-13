@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/constants/deduction_rates.dart';
+import '../../../../core/utils/deduction_details_builder.dart';
 import '../../../../core/utils/number_formatter.dart';
 import '../../../../core/utils/tax_calculator_utils.dart';
+import '../../../../shared/models/deduction_item.dart';
+import '../../../../shared/widgets/deduction_details_card.dart';
 import '../../../../shared/widgets/tax_input_field.dart';
 import '../../../../shared/widgets/tax_result_card.dart';
 
@@ -22,6 +25,7 @@ class _RetirementIncomeScreenState extends State<RetirementIncomeScreen> {
   final _serviceMonthsController = TextEditingController();
 
   TaxCalculationResult? _result;
+  DeductionDetails? _deductionDetails;
 
   @override
   void dispose() {
@@ -45,8 +49,23 @@ class _RetirementIncomeScreenState extends State<RetirementIncomeScreen> {
       serviceMonths: months,
     );
 
+    // 공제 상세내역 생성
+    final serviceDeduction = result.details['serviceDeduction'] as double? ?? 0;
+    final convertedIncome = result.details['convertedIncome'] as double? ?? 0;
+    final convertedDeduction =
+        result.details['convertedDeduction'] as double? ?? 0;
+    final deductionDetails =
+        DeductionDetailsBuilder.buildRetirementIncomeTaxDeductions(
+      serviceYears: years,
+      serviceDeduction: serviceDeduction,
+      convertedIncome: convertedIncome,
+      convertedDeduction: convertedDeduction,
+      retirementPay: retirementPay,
+    );
+
     setState(() {
       _result = result;
+      _deductionDetails = deductionDetails;
     });
   }
 
@@ -57,6 +76,7 @@ class _RetirementIncomeScreenState extends State<RetirementIncomeScreen> {
 
     setState(() {
       _result = null;
+      _deductionDetails = null;
     });
   }
 
@@ -178,6 +198,15 @@ class _RetirementIncomeScreenState extends State<RetirementIncomeScreen> {
               if (_result != null) ...[
                 const SizedBox(height: 24),
                 _buildResultCard(),
+                // 공제 상세내역
+                if (_deductionDetails != null) ...[
+                  const SizedBox(height: 16),
+                  DeductionDetailsCard(
+                    title: '퇴직소득공제 상세내역',
+                    details: _deductionDetails!,
+                    accentColor: const Color(0xFF795548),
+                  ),
+                ],
               ],
 
               const SizedBox(height: 24),

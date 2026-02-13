@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/utils/deduction_details_builder.dart';
 import '../../../../core/utils/tax_calculator_utils.dart';
+import '../../../../shared/models/deduction_item.dart';
+import '../../../../shared/widgets/deduction_details_card.dart';
 import '../../../../shared/widgets/tax_input_field.dart';
 import '../../../../shared/widgets/tax_result_card.dart';
 
@@ -33,6 +36,7 @@ class _IncomeTaxScreenState extends State<IncomeTaxScreen> {
 
   // 계산 결과
   TaxCalculationResult? _result;
+  DeductionDetails? _deductionDetails;
 
   @override
   void dispose() {
@@ -71,8 +75,24 @@ class _IncomeTaxScreenState extends State<IncomeTaxScreen> {
       isSingleParent: _isSingleParent,
     );
 
+    // 공제 상세 정보 생성
+    final deductionDetails = DeductionDetailsBuilder.buildIncomeTaxDeductions(
+      earnedIncome: earnedIncome,
+      pensionIncome: pensionIncome,
+      earnedIncomeDeduction: result.details['earnedIncomeDeduction'] as double? ?? 0,
+      pensionIncomeDeduction: result.details['pensionIncomeDeduction'] as double? ?? 0,
+      personalDeductions: result.details['personalDeductions'] as double? ?? 0,
+      hasSpouse: _hasSpouse,
+      dependents: _dependents,
+      elderlyCount: _elderlyCount,
+      disabledCount: _disabledCount,
+      isWomanDeductionEligible: _isWomanDeductionEligible,
+      isSingleParent: _isSingleParent,
+    );
+
     setState(() {
       _result = result;
+      _deductionDetails = deductionDetails;
     });
   }
 
@@ -92,6 +112,7 @@ class _IncomeTaxScreenState extends State<IncomeTaxScreen> {
       _isWomanDeductionEligible = false;
       _isSingleParent = false;
       _result = null;
+      _deductionDetails = null;
     });
   }
 
@@ -185,6 +206,15 @@ class _IncomeTaxScreenState extends State<IncomeTaxScreen> {
               if (_result != null) ...[
                 const SizedBox(height: 24),
                 TaxResultCard(result: _result!),
+                // 공제 상세내역 카드
+                if (_deductionDetails != null) ...[
+                  const SizedBox(height: 16),
+                  DeductionDetailsCard(
+                    details: _deductionDetails!,
+                    title: '공제 상세내역',
+                    accentColor: Theme.of(context).colorScheme.primary,
+                  ),
+                ],
               ],
 
               const SizedBox(height: 24),

@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/constants/deduction_rates.dart';
+import '../../../../core/utils/deduction_details_builder.dart';
 import '../../../../core/utils/number_formatter.dart';
 import '../../../../core/utils/tax_calculator_utils.dart';
+import '../../../../shared/models/deduction_item.dart';
+import '../../../../shared/widgets/deduction_details_card.dart';
 import '../../../../shared/widgets/tax_input_field.dart';
 import '../../../../shared/widgets/tax_result_card.dart';
 
@@ -27,6 +30,7 @@ class _GiftTaxScreenState extends State<GiftTaxScreen> {
   final _previousGiftsController = TextEditingController();
 
   TaxCalculationResult? _result;
+  DeductionDetails? _deductionDetails;
 
   @override
   void dispose() {
@@ -48,8 +52,18 @@ class _GiftTaxScreenState extends State<GiftTaxScreen> {
       previousGiftsIn10Years: _hasPreviousGifts ? previousGifts : 0,
     );
 
+    // 공제 상세내역 생성
+    final giftDeduction = result.details['giftDeduction'] as double? ?? 0;
+    final deductionDetails = DeductionDetailsBuilder.buildGiftTaxDeductions(
+      relation: _selectedRelation,
+      giftDeduction: giftDeduction,
+      giftValue: giftValue,
+      previousGifts: _hasPreviousGifts ? previousGifts : 0,
+    );
+
     setState(() {
       _result = result;
+      _deductionDetails = deductionDetails;
     });
   }
 
@@ -61,6 +75,7 @@ class _GiftTaxScreenState extends State<GiftTaxScreen> {
       _selectedRelation = GiftRelation.spouse;
       _hasPreviousGifts = false;
       _result = null;
+      _deductionDetails = null;
     });
   }
 
@@ -125,6 +140,15 @@ class _GiftTaxScreenState extends State<GiftTaxScreen> {
               if (_result != null) ...[
                 const SizedBox(height: 24),
                 _buildResultCard(),
+                // 공제 상세내역
+                if (_deductionDetails != null) ...[
+                  const SizedBox(height: 16),
+                  DeductionDetailsCard(
+                    title: '증여공제 상세내역',
+                    details: _deductionDetails!,
+                    accentColor: const Color(0xFFE91E63),
+                  ),
+                ],
               ],
 
               const SizedBox(height: 24),
