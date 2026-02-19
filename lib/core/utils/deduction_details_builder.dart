@@ -252,16 +252,63 @@ class DeductionDetailsBuilder {
     required double financialAssets,
     required double housingValue,
     required int reinheritanceYears,
+    bool usedLumpSum = false,
+    double personalDeduction = 0,
   }) {
     final items = <DeductionItem>[];
 
-    // 1. 기초공제
-    if (basicDeduction > 0) {
+    // 1. 일괄공제 또는 기초공제+인적공제
+    if (usedLumpSum) {
       items.add(DeductionItem(
-        name: '기초공제',
+        name: '일괄공제',
         amount: basicDeduction,
-        description: '상속세 기초공제 (2억원)',
+        description: '일괄공제 5억원 적용 (기초+인적보다 유리)',
       ));
+    } else {
+      if (basicDeduction > 0) {
+        items.add(DeductionItem(
+          name: '기초공제',
+          amount: basicDeduction,
+          description: '상속세 기초공제 (2억원)',
+        ));
+      }
+
+      // 인적공제 (자녀, 부모, 형제자매)
+      if (personalDeduction > 0) {
+        final totalPersons = childrenCount + parentsCount + siblingsCount;
+        final subItems = <DeductionItem>[];
+
+        if (childrenCount > 0) {
+          subItems.add(DeductionItem(
+            name: '자녀공제',
+            amount: childrenCount * 50000000.0,
+            formula: '5,000만원 × $childrenCount인',
+          ));
+        }
+
+        if (parentsCount > 0) {
+          subItems.add(DeductionItem(
+            name: '직계존속공제',
+            amount: parentsCount * 50000000.0,
+            formula: '5,000만원 × $parentsCount인',
+          ));
+        }
+
+        if (siblingsCount > 0) {
+          subItems.add(DeductionItem(
+            name: '형제자매공제',
+            amount: siblingsCount * 50000000.0,
+            formula: '5,000만원 × $siblingsCount인',
+          ));
+        }
+
+        items.add(DeductionItem(
+          name: '인적공제',
+          amount: personalDeduction,
+          formula: '5,000만원 × $totalPersons인',
+          subItems: subItems,
+        ));
+      }
     }
 
     // 2. 배우자 공제
@@ -269,44 +316,7 @@ class DeductionDetailsBuilder {
       items.add(DeductionItem(
         name: '배우자 공제',
         amount: spouseDeduction,
-        description: '최소 5억원, 최대 30억원',
-      ));
-    }
-
-    // 3. 인적공제 (자녀, 부모, 형제자매)
-    if (childDeduction > 0) {
-      final totalPersons = childrenCount + parentsCount + siblingsCount;
-      final subItems = <DeductionItem>[];
-
-      if (childrenCount > 0) {
-        subItems.add(DeductionItem(
-          name: '자녀공제',
-          amount: childrenCount * 50000000.0,
-          formula: '5,000만원 × $childrenCount인',
-        ));
-      }
-
-      if (parentsCount > 0) {
-        subItems.add(DeductionItem(
-          name: '직계존속공제',
-          amount: parentsCount * 50000000.0,
-          formula: '5,000만원 × $parentsCount인',
-        ));
-      }
-
-      if (siblingsCount > 0) {
-        subItems.add(DeductionItem(
-          name: '형제자매공제',
-          amount: siblingsCount * 50000000.0,
-          formula: '5,000만원 × $siblingsCount인',
-        ));
-      }
-
-      items.add(DeductionItem(
-        name: '인적공제',
-        amount: childDeduction,
-        formula: '5,000만원 × $totalPersons인',
-        subItems: subItems,
+        description: '법정상속지분 내 실제상속분 (5억~30억)',
       ));
     }
 

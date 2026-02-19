@@ -26,6 +26,7 @@ class _InheritanceTaxScreenState extends State<InheritanceTaxScreen> {
 
   // 상속공제 옵션
   bool _hasSpouse = false;
+  final _spouseInheritanceController = TextEditingController();
   int _childrenCount = 0;
   int _parentsCount = 0;
   int _siblingsCount = 0;
@@ -47,6 +48,7 @@ class _InheritanceTaxScreenState extends State<InheritanceTaxScreen> {
     _totalAssetsController.dispose();
     _debtsController.dispose();
     _funeralExpensesController.dispose();
+    _spouseInheritanceController.dispose();
     _financialAssetsController.dispose();
     _housingValueController.dispose();
     _reinheritanceValueController.dispose();
@@ -60,6 +62,7 @@ class _InheritanceTaxScreenState extends State<InheritanceTaxScreen> {
     final totalAssets = TaxInputField.getValueInWon(_totalAssetsController);
     final debts = TaxInputField.getValueInWon(_debtsController);
     final funeralExpenses = TaxInputField.getValueInWon(_funeralExpensesController);
+    final spouseInheritance = TaxInputField.getValueInWon(_spouseInheritanceController);
     final financialAssets = TaxInputField.getValueInWon(_financialAssetsController);
     final housingValue = TaxInputField.getValueInWon(_housingValueController);
     final reinheritanceValue = TaxInputField.getValueInWon(_reinheritanceValueController);
@@ -69,6 +72,7 @@ class _InheritanceTaxScreenState extends State<InheritanceTaxScreen> {
       debts: debts,
       funeralExpenses: funeralExpenses,
       hasSpouse: _hasSpouse,
+      spouseInheritanceAmount: _hasSpouse ? spouseInheritance : 0,
       childrenCount: _childrenCount,
       parentsCount: _parentsCount,
       siblingsCount: _siblingsCount,
@@ -106,6 +110,7 @@ class _InheritanceTaxScreenState extends State<InheritanceTaxScreen> {
     _totalAssetsController.clear();
     _debtsController.clear();
     _funeralExpensesController.clear();
+    _spouseInheritanceController.clear();
     _financialAssetsController.clear();
     _housingValueController.clear();
     _reinheritanceValueController.clear();
@@ -253,7 +258,7 @@ class _InheritanceTaxScreenState extends State<InheritanceTaxScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // 기초공제 안내
+            // 일괄공제 안내
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
@@ -266,8 +271,8 @@ class _InheritanceTaxScreenState extends State<InheritanceTaxScreen> {
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      '기초공제: 2억원 (자동 적용)',
-                      style: TextStyle(color: Colors.blue[700]),
+                      '기초공제(2억)+인적공제 합계와 일괄공제(5억) 중\n큰 금액이 자동 적용됩니다.',
+                      style: TextStyle(color: Colors.blue[700], fontSize: 13),
                     ),
                   ),
                 ],
@@ -278,7 +283,7 @@ class _InheritanceTaxScreenState extends State<InheritanceTaxScreen> {
             // 배우자 공제
             SwitchListTile(
               title: const Text('배우자 공제'),
-              subtitle: const Text('최소 5억원 (법정상속분 한도)'),
+              subtitle: const Text('최소 5억원 ~ 최대 30억원'),
               value: _hasSpouse,
               onChanged: (value) {
                 setState(() {
@@ -287,6 +292,24 @@ class _InheritanceTaxScreenState extends State<InheritanceTaxScreen> {
               },
               contentPadding: EdgeInsets.zero,
             ),
+            if (_hasSpouse) ...[
+              Padding(
+                padding: const EdgeInsets.only(left: 16, right: 16, bottom: 8),
+                child: TaxInputField(
+                  controller: _spouseInheritanceController,
+                  label: '배우자 실제상속분',
+                  hint: '미입력 시 최소 5억원 적용',
+                  prefixIcon: Icons.people,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Text(
+                  '법정상속지분 내 실제 상속받은 금액 (5억~30억)',
+                  style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                ),
+              ),
+            ],
             const Divider(),
 
             // 자녀 수
@@ -594,14 +617,19 @@ class _InheritanceTaxScreenState extends State<InheritanceTaxScreen> {
                                 ),
                       ),
                       const SizedBox(height: 8),
-                      _buildDeductionDetail(
-                          '기초공제', details['basicDeduction'] as double),
+                      if (details['usedLumpSum'] == true)
+                        _buildDeductionDetail(
+                            '일괄공제', details['basicDeduction'] as double)
+                      else ...[
+                        _buildDeductionDetail(
+                            '기초공제', details['basicDeduction'] as double),
+                        if ((details['personalDeduction'] as double) > 0)
+                          _buildDeductionDetail(
+                              '인적공제', details['personalDeduction'] as double),
+                      ],
                       if (details['spouseDeduction'] as double > 0)
                         _buildDeductionDetail(
                             '배우자공제', details['spouseDeduction'] as double),
-                      if (details['childDeduction'] as double > 0)
-                        _buildDeductionDetail(
-                            '자녀공제', details['childDeduction'] as double),
                       if (details['financialDeduction'] as double > 0)
                         _buildDeductionDetail(
                             '금융재산공제', details['financialDeduction'] as double),

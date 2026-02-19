@@ -171,6 +171,7 @@ class TaxCalculatorUtils {
     required double debts,
     required double funeralExpenses,
     required bool hasSpouse,
+    double spouseInheritanceAmount = 0,
     int childrenCount = 0,
     int parentsCount = 0,
     int siblingsCount = 0,
@@ -198,6 +199,7 @@ class TaxCalculatorUtils {
           'spouseDeduction': 0.0,
           'childDeduction': 0.0,
           'financialDeduction': 0.0,
+          'usedLumpSum': false,
         },
       );
     }
@@ -207,20 +209,35 @@ class TaxCalculatorUtils {
 
     // 기초공제 2억원
     const double basicDeduction = 200000000;
-    totalDeductions += basicDeduction;
-
-    // 배우자 공제 (최소 5억원)
-    double spouseDeduction = 0;
-    if (hasSpouse) {
-      spouseDeduction = 500000000;
-      totalDeductions += spouseDeduction;
-    }
 
     // 인적공제 (자녀, 부모, 형제자매 각 5천만원)
     final childDeduction = childrenCount * 50000000.0;
     final parentDeduction = parentsCount * 50000000.0;
     final siblingDeduction = siblingsCount * 50000000.0;
-    totalDeductions += childDeduction + parentDeduction + siblingDeduction;
+    final personalDeduction = childDeduction + parentDeduction + siblingDeduction;
+
+    // 일괄공제 vs (기초공제 + 인적공제) 비교 → 큰 금액 선택
+    const double lumpSumDeduction = 500000000; // 일괄공제 5억원
+    final basicPlusPersonal = basicDeduction + personalDeduction;
+    final bool usedLumpSum = lumpSumDeduction >= basicPlusPersonal;
+    final double appliedBasicPersonal = usedLumpSum ? lumpSumDeduction : basicPlusPersonal;
+    totalDeductions += appliedBasicPersonal;
+
+    // 배우자 공제 (최소 5억원, 최대 30억원 - 법정상속지분 내 실제 상속분)
+    double spouseDeduction = 0;
+    if (hasSpouse) {
+      if (spouseInheritanceAmount > 0) {
+        // 실제 배우자 상속분 기준, 5억~30억 범위
+        spouseDeduction = spouseInheritanceAmount.clamp(
+          InheritanceTaxDeduction.minSpouseDeduction,
+          InheritanceTaxDeduction.maxSpouseDeduction,
+        );
+      } else {
+        // 별도 입력 없으면 최소 5억 적용
+        spouseDeduction = InheritanceTaxDeduction.minSpouseDeduction;
+      }
+      totalDeductions += spouseDeduction;
+    }
 
     // 금융재산 공제
     double financialDeduction = 0;
@@ -263,9 +280,11 @@ class TaxCalculatorUtils {
       details: {
         'debtsAndExpenses': debtsAndExpenses,
         'totalDeductions': totalDeductions,
-        'basicDeduction': basicDeduction,
+        'basicDeduction': usedLumpSum ? lumpSumDeduction : basicDeduction,
+        'personalDeduction': usedLumpSum ? 0.0 : personalDeduction,
+        'usedLumpSum': usedLumpSum,
         'spouseDeduction': spouseDeduction,
-        'childDeduction': childDeduction + parentDeduction + siblingDeduction,
+        'childDeduction': personalDeduction,
         'financialDeduction': financialDeduction,
         'housingDeduction': housingDeduction,
         'reinheritanceDeduction': reinheritanceDeduction,

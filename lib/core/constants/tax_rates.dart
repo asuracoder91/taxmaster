@@ -50,13 +50,13 @@ class IncomeTaxRates {
   }
 }
 
-/// 법인세 세율표 (2025년 기준)
+/// 법인세 세율표 (2026년 기준 - 2025.12 개정, 각 구간 1%p 인상)
 class CorporateTaxRates {
   static const List<TaxBracket> brackets = [
-    TaxBracket(threshold: 200000000, rate: 0.09, deduction: 0),
-    TaxBracket(threshold: 20000000000, rate: 0.19, deduction: 20000000),
-    TaxBracket(threshold: 300000000000, rate: 0.21, deduction: 420000000),
-    TaxBracket(threshold: double.infinity, rate: 0.24, deduction: 9420000000),
+    TaxBracket(threshold: 200000000, rate: 0.10, deduction: 0),
+    TaxBracket(threshold: 20000000000, rate: 0.20, deduction: 20000000),
+    TaxBracket(threshold: 300000000000, rate: 0.22, deduction: 420000000),
+    TaxBracket(threshold: double.infinity, rate: 0.25, deduction: 9420000000),
   ];
 
   /// 과세표준에 대한 법인세 계산
