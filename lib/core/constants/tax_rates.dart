@@ -11,7 +11,7 @@ class TaxBracket {
   });
 }
 
-/// 종합소득세 세율표 (2025년 기준)
+/// 종합소득세 세율표 (2026년 기준 - 변경 없음)
 class IncomeTaxRates {
   static const List<TaxBracket> brackets = [
     TaxBracket(threshold: 14000000, rate: 0.06, deduction: 0),
@@ -84,7 +84,7 @@ class CorporateTaxRates {
   }
 }
 
-/// 상속세/증여세 세율표 (2025년 기준)
+/// 상속세/증여세 세율표 (2026년 기준 - 변경 없음)
 class InheritanceGiftTaxRates {
   static const List<TaxBracket> brackets = [
     TaxBracket(threshold: 100000000, rate: 0.10, deduction: 0),
@@ -119,7 +119,7 @@ class InheritanceGiftTaxRates {
   }
 }
 
-/// 양도소득세 세율표 (2025년 기준)
+/// 양도소득세 세율표 (2026년 기준 - 변경 없음)
 class CapitalGainsTaxRates {
   static const List<TaxBracket> brackets = [
     TaxBracket(threshold: 14000000, rate: 0.06, deduction: 0),
@@ -156,8 +156,8 @@ class CapitalGainsTaxRates {
     return brackets.last;
   }
 
-  /// 비사업용 토지 등 중과세율
-  static const double heavyTaxRate = 0.60;
+  /// 비사업용 토지 등 중과세율 (기본세율 + 10%p)
+  static const double heavyTaxSurcharge = 0.10;
 
   /// 미등기 양도 중과세율
   static const double unregisteredTaxRate = 0.70;
@@ -172,7 +172,7 @@ class CapitalGainsTaxRates {
   static const double presaleRightShortTermRate = 0.70;
 }
 
-/// 퇴직소득세 환산급여 세율표 (2025년 기준)
+/// 퇴직소득세 환산급여 세율표 (2026년 기준 - 변경 없음)
 class RetirementIncomeTaxRates {
   static const List<TaxBracket> convertedSalaryBrackets = [
     TaxBracket(threshold: 8000000, rate: 1.00, deduction: 0), // 100% 공제

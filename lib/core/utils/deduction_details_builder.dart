@@ -201,7 +201,7 @@ class DeductionDetailsBuilder {
       String description = '보유기간 $holdingYears년';
 
       if (isOneHouseOneFamily) {
-        final holdingRate = LongTermHoldingDeduction.getRate(holdingYears);
+        final holdingRate = LongTermHoldingDeduction.getOneHouseHoldingRate(holdingYears);
         final residenceRate = LongTermHoldingDeduction.getResidenceRate(residenceYears);
         description = '보유 ${(holdingRate * 100).toStringAsFixed(0)}%';
         if (residenceRate > 0) {

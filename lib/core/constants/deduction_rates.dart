@@ -184,7 +184,20 @@ class LongTermHoldingDeduction {
     ];
   }
 
-  /// 1세대 1주택 거주기간 공제율 (추가)
+  /// 1세대 1주택 보유기간 공제율 (연 4%, 최대 40%)
+  static double getOneHouseHoldingRate(int holdingYears) {
+    if (holdingYears < 3) return 0;
+    if (holdingYears < 4) return 0.12;
+    if (holdingYears < 5) return 0.16;
+    if (holdingYears < 6) return 0.20;
+    if (holdingYears < 7) return 0.24;
+    if (holdingYears < 8) return 0.28;
+    if (holdingYears < 9) return 0.32;
+    if (holdingYears < 10) return 0.36;
+    return 0.40; // 10년 이상
+  }
+
+  /// 1세대 1주택 거주기간 공제율 (연 4%, 최대 40%)
   static double getResidenceRate(int residenceYears) {
     if (residenceYears < 2) return 0;
     if (residenceYears < 3) return 0.08;

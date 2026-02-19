@@ -88,6 +88,8 @@ class _InheritanceTaxScreenState extends State<InheritanceTaxScreen> {
       basicDeduction: details['basicDeduction'] as double? ?? 0,
       spouseDeduction: details['spouseDeduction'] as double? ?? 0,
       childDeduction: details['childDeduction'] as double? ?? 0,
+      personalDeduction: details['personalDeduction'] as double? ?? 0,
+      usedLumpSum: details['usedLumpSum'] as bool? ?? false,
       financialDeduction: details['financialDeduction'] as double? ?? 0,
       housingDeduction: details['housingDeduction'] as double? ?? 0,
       reinheritanceDeduction: details['reinheritanceDeduction'] as double? ?? 0,

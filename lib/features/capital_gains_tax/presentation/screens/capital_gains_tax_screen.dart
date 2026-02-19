@@ -488,7 +488,7 @@ class _CapitalGainsTaxScreenState extends State<CapitalGainsTaxScreen> {
                 children: [
                   _buildSpecialRateItem('1년 미만 보유 (주택)', '70%'),
                   _buildSpecialRateItem('1~2년 보유 (주택)', '60%'),
-                  _buildSpecialRateItem('비사업용 토지', '60%'),
+                  _buildSpecialRateItem('비사업용 토지', '기본세율+10%p'),
                   _buildSpecialRateItem('미등기 양도', '70%'),
                 ],
               ),

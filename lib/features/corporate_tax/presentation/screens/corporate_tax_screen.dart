@@ -125,7 +125,7 @@ class _CorporateTaxScreenState extends State<CorporateTaxScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              '법인세 세율표 (2025년)',
+              '법인세 세율표 (2026년)',
               style: Theme.of(context).textTheme.titleSmall?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -164,10 +164,10 @@ class _CorporateTaxScreenState extends State<CorporateTaxScreen> {
                     ),
                   ],
                 ),
-                _buildRateRow('2억원 이하', '9%'),
-                _buildRateRow('2억원 초과 ~ 200억원 이하', '19%'),
-                _buildRateRow('200억원 초과 ~ 3,000억원 이하', '21%'),
-                _buildRateRow('3,000억원 초과', '24%'),
+                _buildRateRow('2억원 이하', '10%'),
+                _buildRateRow('2억원 초과 ~ 200억원 이하', '20%'),
+                _buildRateRow('200억원 초과 ~ 3,000억원 이하', '22%'),
+                _buildRateRow('3,000억원 초과', '25%'),
               ],
             ),
           ],

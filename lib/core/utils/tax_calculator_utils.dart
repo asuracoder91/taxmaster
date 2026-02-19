@@ -124,14 +124,16 @@ class TaxCalculatorUtils {
     }
 
     // 2. 장기보유특별공제
-    double longTermDeductionRate = LongTermHoldingDeduction.getRate(holdingYears);
+    double longTermDeductionRate;
 
-    // 1세대 1주택인 경우 거주기간 공제 추가
     if (isOneHouseOneFamily) {
-      longTermDeductionRate +=
-          LongTermHoldingDeduction.getResidenceRate(residenceYears);
-      // 최대 80%
-      longTermDeductionRate = longTermDeductionRate.clamp(0, 0.80);
+      // 1세대 1주택: 보유 4%/년(최대40%) + 거주 4%/년(최대40%) = 최대 80%
+      final holdingRate = LongTermHoldingDeduction.getOneHouseHoldingRate(holdingYears);
+      final residenceRate = LongTermHoldingDeduction.getResidenceRate(residenceYears);
+      longTermDeductionRate = (holdingRate + residenceRate).clamp(0, 0.80);
+    } else {
+      // 일반: 2%/년, 최대 30%
+      longTermDeductionRate = LongTermHoldingDeduction.getRate(holdingYears);
     }
 
     final longTermDeduction = capitalGain * longTermDeductionRate;
